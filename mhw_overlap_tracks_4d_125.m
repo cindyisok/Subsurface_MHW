@@ -1,18 +1,30 @@
-% MHW tracking based on KNN results and overlapped value (set to 0.5) on 3-d 
+% MHW tracking based on KNN results and overlapped value (set to 0.5) on 4-d 
 % Ver.1
-% Update date :2022/3/9
-load('/home/jingzhao/sundi/code/heatwave/3d_KNN/ecco2_cfsr_subsample/1992/mask_now.mat')
+% Update date :2023/3/9
+
+% cat data
+depth = 20;
+for k = 1992:2020
+    mask_now = zeros(360,120,depth,datenum(k,12,31)-datenum(k,1,1)+1);
+    for i = 1:datenum(k,12,31)-datenum(k,1,1)+1
+        load(['./' num2str(k) '/test',num2str(i,'%03d'),'.mat']);
+        mask_now(:,:,:,i) = mask;
+        disp(i)
+    end
+    save(['./' num2str(k) '/mask_now.mat'],'mask_now','-v7.3')
+end
+
+% cat data
+load('./1992/mask_now.mat')
 mask = mask_now;
 for i = 1993:2020
-    load(['/home/jingzhao/sundi/code/heatwave/3d_KNN/ecco2_cfsr_subsample/',num2str(i),'/mask_now.mat']);
+    load(['./',num2str(i),'/mask_now.mat']);
     mask = cat(4,mask,mask_now);
     disp(i)
 end
-%save('/home/jingzhao/sundi/result/knn/mask_corr_1992_2020_ecco2_verti_cfsr_all.mat','mask','-v7.3')
-%load('/home/jingzhao/sundi/result/knn/mask_corr_1992_2020_ecco2_verti_cfsr_all.mat')
 
-load('../3d_KNN/map_ecco2.mat')
-%sst = sst(1:4:end,121:4:600);
+% remove the land
+load('map_mask.mat')
 for k = 1:datenum(2020,12,31)-datenum(1992,1,1)+1
     for m = 1:20
         extract = mask(:,:,m,k);
@@ -21,6 +33,28 @@ for k = 1:datenum(2020,12,31)-datenum(1992,1,1)+1
         disp(k)
     end
 end
+
+% % remove MHWs less than 125 points
+% MHWs = struct('day',{},'xloc',{},'yloc',{},'zloc',{});
+% mask_daily = mask(:,:,:,:);
+% for i = 1:length(mask_daily(1,1,1,:))
+%     count = 0;
+%     mask = mask_daily(:,:,:,i);
+%     D = bwconncomp(mask,26);
+%     for j = 1:D.NumObjects
+%     [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
+%         if length(x)>=125
+%             count = count + 1;
+%             MHWs(i).zloc{count,1} = single(z);
+%             MHWs(i).yloc{count,1} = single(y);
+%             MHWs(i).xloc{count,1} = single(x);
+%             MHWs(i).day = i;
+%         end
+%     end
+%     disp(i)
+% end
+
+% remove MHWs less than a fixed volume
 MHWs = struct('day',{},'xloc',{},'yloc',{},'zloc',{});
 mask_daily = mask(:,:,:,:);
 for i = 1:length(mask_daily(1,1,1,:))
@@ -28,8 +62,12 @@ for i = 1:length(mask_daily(1,1,1,:))
     mask = mask_daily(:,:,:,i);
     D = bwconncomp(mask,26);
     for j = 1:D.NumObjects
-    [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
-        if length(x)>=140
+        [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
+        volume = 0;
+        for k = 1:length(x)
+            volume = volume + (r^2 * 1 * pi/180 * (sin((y(k)+1/2+30-90)*pi/180) - sin((y(k)-1/2+30-90)*pi/180)))*10*1e-3;
+        end
+        if volume>=1.0732e+04*10*1e-3*125
             count = count + 1;
             MHWs(i).zloc{count,1} = single(z);
             MHWs(i).yloc{count,1} = single(y);
@@ -39,10 +77,9 @@ for i = 1:length(mask_daily(1,1,1,:))
     end
     disp(i)
 end
-save('/home/jingzhao/sundi/result/knn/MHWs_nonland_remove_92_20_140_ecco2_verti_cfsr_subsample.mat','MHWs','-v7.3')
 
-% ------------------------------- Loading -------------------------------
-%load('/home/jingzhao/sundi/result/knn/cfsr_10m_NA/MHWs_nonland_remove_92_20_400_NA.mat');
+% ---------------------------------------------------------------------
+% --------------------------- MHW tracking ----------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ==================== Before beginning the algorithm, ====================
@@ -557,7 +594,7 @@ short=sum(short);
 % =========================================================================
 
 % ================================ Saving =================================
-save(['/home/jingzhao/sundi/result/ECCO2/mhw_tracks/','MHW_tracks_3d_0.5_200m_1x1_60_140_ecco2_verti_cfsr_subsample.mat'],'tracks','-v7.3')
+save(['./mhw_tracks/','MHW_tracks_3d_200m_1x1_60_125_coef_0.6.mat'],'tracks','-v7.3')
 % =============================== End saving ==============================
 
 % -------------------------------- Ending ---------------------------------

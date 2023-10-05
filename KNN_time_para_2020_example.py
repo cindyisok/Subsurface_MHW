@@ -15,7 +15,7 @@ from sys import stdout
 #
 # load data
 #
-data = scio.loadmat('map_ecco2.mat')
+data = scio.loadmat('map_mask.mat')
 sst = data['sst']
 
 len_yr = 366
@@ -45,7 +45,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -102,7 +102,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -155,7 +155,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -211,7 +211,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -264,7 +264,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -316,7 +316,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -372,7 +372,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -424,7 +424,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -477,7 +477,7 @@ def maximum_correlation_cluster(rank,sst, mask):
             
             if sst[i-1, j-1] == 0:
                 
-                datapath='/home/jingzhao/sundi/data/r_correlation_ecco2_real_trend/'
+                datapath='./'
                 data = scio.loadmat(datapath+'r_'+str(i)+'_'+str(j)+'.mat')
                 
                 r = data['r']
@@ -554,7 +554,7 @@ displ = [sum(count[:p]) for p in range(size)]
 var='Pres'
 
 if rank == 0:
-    data = h5py.File('/home/jingzhao/sundi/result/masks/mask_day_2020_1x1_60_200m_real_trend_verti_CFSR.mat', mode='r')
+    data = h5py.File('./mask_day_2020.mat', mode='r')
     mask_day = data['mask_day'][:]
     mask_day = mask_day.transpose(1, 3, 2, 0)
     s, p, pp, l = mask_day.shape
@@ -580,7 +580,7 @@ for i in range(count[rank]):
     mask = mask_[i].reshape(p,pp,l)
     tempdata = maximum_correlation_cluster(rank, sst, mask)
 
-    scio.savemat('./ecco2_real_trend/2020/test%03d.mat'%(i+1+displ[rank]),{'mask':tempdata})
+    scio.savemat('./2020/test%03d.mat'%(i+1+displ[rank]),{'mask':tempdata})
             
             
             
