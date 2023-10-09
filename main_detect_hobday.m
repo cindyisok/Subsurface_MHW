@@ -39,7 +39,7 @@ for i = 1:20
 end
 %% Split into single file for different years
 for i = 1992:2020
-    mask_day = mask_now(:,:,datenum(i,1,1)-datenum(1992,1,1)+1:datenum(i,12,31)-datenum(2020,1,1)+1,:);
+    mask_day = mask_now(:,:,datenum(i,1,1)-datenum(1992,1,1)+1:datenum(i,12,31)-datenum(1992,1,1)+1,:);
     save(['./mask_day_' num2str(i) '.mat'],'mask_day','-v7.3')
     disp(i)
 end
