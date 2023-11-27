@@ -1,19 +1,19 @@
-% MHW tracking based on KNN results and overlapped value (set to 0.5) on 4-d 
-% Ver.1
-% Update date :2023/3/9
-
+% % MHW tracking based on KNN results and overlapped value (set to 0.5) on 4-d 
+% % Ver.1
+% % Update date :2023/3/9
+% 
 % cat data
 depth = 20;
-for k = 1992:2020
-    mask_now = zeros(360,120,depth,datenum(k,12,31)-datenum(k,1,1)+1);
-    for i = 1:datenum(k,12,31)-datenum(k,1,1)+1
-        load(['./' num2str(k) '/test',num2str(i,'%03d'),'.mat']);
-        mask_now(:,:,:,i) = mask;
-        disp(i)
-    end
-    save(['./' num2str(k) '/mask_now.mat'],'mask_now','-v7.3')
-end
-
+% for k = 1992:2020
+%     mask_now = zeros(360,120,depth,datenum(k,12,31)-datenum(k,1,1)+1);
+%     for i = 1:datenum(k,12,31)-datenum(k,1,1)+1
+%         load(['./' num2str(k) '/test',num2str(i,'%03d'),'.mat']);
+%         mask_now(:,:,:,i) = mask;
+%         disp(i)
+%     end
+%     save(['./' num2str(k) '/mask_now.mat'],'mask_now','-v7.3')
+% end
+% 
 % cat data
 load('./1992/mask_now.mat')
 mask = mask_now;
@@ -22,10 +22,10 @@ for i = 1993:2020
     mask = cat(4,mask,mask_now);
     disp(i)
 end
-
+% 
 % remove the land
 load('map_mask.mat')
-for k = 1:datenum(2020,12,31)-datenum(1992,1,1)+1
+for k = 1:datenum(2020,12,31)-datenum(1993,1,1)+1
     for m = 1:20
         extract = mask(:,:,m,k);
         extract(extract==1 & sst ==1) = 0;
@@ -33,28 +33,8 @@ for k = 1:datenum(2020,12,31)-datenum(1992,1,1)+1
         disp(k)
     end
 end
-
-% % remove MHWs less than 125 points
-% MHWs = struct('day',{},'xloc',{},'yloc',{},'zloc',{});
-% mask_daily = mask(:,:,:,:);
-% for i = 1:length(mask_daily(1,1,1,:))
-%     count = 0;
-%     mask = mask_daily(:,:,:,i);
-%     D = bwconncomp(mask,26);
-%     for j = 1:D.NumObjects
-%     [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
-%         if length(x)>=125
-%             count = count + 1;
-%             MHWs(i).zloc{count,1} = single(z);
-%             MHWs(i).yloc{count,1} = single(y);
-%             MHWs(i).xloc{count,1} = single(x);
-%             MHWs(i).day = i;
-%         end
-%     end
-%     disp(i)
-% end
-
-% remove MHWs less than a fixed volume
+% 
+% remove MHWs less than 125 points
 MHWs = struct('day',{},'xloc',{},'yloc',{},'zloc',{});
 mask_daily = mask(:,:,:,:);
 for i = 1:length(mask_daily(1,1,1,:))
@@ -62,12 +42,8 @@ for i = 1:length(mask_daily(1,1,1,:))
     mask = mask_daily(:,:,:,i);
     D = bwconncomp(mask,26);
     for j = 1:D.NumObjects
-        [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
-        volume = 0;
-        for k = 1:length(x)
-            volume = volume + (r^2 * 1 * pi/180 * (sin((y(k)+1/2+30-90)*pi/180) - sin((y(k)-1/2+30-90)*pi/180)))*10*1e-3;
-        end
-        if volume>=1.0732e+04*10*1e-3*125
+    [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
+        if length(x)>=125
             count = count + 1;
             MHWs(i).zloc{count,1} = single(z);
             MHWs(i).yloc{count,1} = single(y);
@@ -77,11 +53,35 @@ for i = 1:length(mask_daily(1,1,1,:))
     end
     disp(i)
 end
-
+% 
+% remove MHWs less than a fixed volume
+% MHWs = struct('day',{},'xloc',{},'yloc',{},'zloc',{});
+% mask_daily = mask(:,:,:,:);
+% for i = 1:length(mask_daily(1,1,1,:))
+%     count = 0;
+%     mask = mask_daily(:,:,:,i);
+%     D = bwconncomp(mask,26);
+%     for j = 1:D.NumObjects
+%         [x,y,z] = ind2sub([360,120,20],D.PixelIdxList{j});
+%         volume = 0;
+%         for k = 1:length(x)
+%             volume = volume + (r^2 * 1 * pi/180 * (sin((y(k)+1/2+30-90)*pi/180) - sin((y(k)-1/2+30-90)*pi/180)))*10*1e-3;
+%         end
+%         if volume>=1.0732e+04*10*1e-3*125
+%             count = count + 1;
+%             MHWs(i).zloc{count,1} = single(z);
+%             MHWs(i).yloc{count,1} = single(y);
+%             MHWs(i).xloc{count,1} = single(x);
+%             MHWs(i).day = i;
+%         end
+%     end
+%     disp(i)
+% end
+% 
 % ---------------------------------------------------------------------
 % --------------------------- MHW tracking ----------------------------
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
 % ==================== Before beginning the algorithm, ====================
 % ==================== run the following part =============================
 % ==================== firstly for those empty days =======================
