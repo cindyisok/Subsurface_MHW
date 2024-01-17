@@ -14,7 +14,9 @@ The current version of this package is organized as follows.
 ③The KNN (K-nearest neighbor) cluster is carried out by KNN_time_para_2020_example.py and a MPI parrallel is adopted in this algorithm.
 
 
-④Track the MHWs in the time domain (mhw_overlap_tracks_4d_125.m).
+④Track the MHWs in the time domain (mhw_overlap_tracks_4d_125.m or mhw_overlap_tracks_4d_125.py).
+ eg.
+ <mhw_overlap_tracks_4d_125.py --start_year 1993 --end_year 2020 --data_path 'your/mhw_data/path' --mask 'map_mask.mat' --alpha 0.5 --longitude_length 360 --latitude_length 120 --depth 20 --cut_off 5 --judgment 'region'>
 
 
 Welcome to use and modify!
