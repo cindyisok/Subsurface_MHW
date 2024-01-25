@@ -20,7 +20,7 @@ scipy<br>
 h5py
 * Run mhw_overlap_tracks_4d_125.py<br>
  ```
-python mhw_overlap_tracks_4d_125.py --start_year 1993 --end_year 2020 --data_path 'your/mhw_data/path' --mask 'map_mask.mat' --alpha 0.5 --longitude_length 360 --latitude_length 120 --depth 20 --cut_off 5 --judgment 'region'
+python mhw_overlap_tracks_4d_125.py --start_year 1993 --end_year 2020 --data_path 'your/mhw_data/path' --mask 'map_mask.mat' --alpha 0.5 --longitude_length 360 --latitude_length 120 --depth 20 --cut_off 5 --judgment 'region' --output 'MHW_tracks_3d_200m_1x1_60_125_coef_0.6_final'
 ```
 
 Welcome to use and modify!
