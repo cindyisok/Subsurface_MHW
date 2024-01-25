@@ -18,6 +18,7 @@ parser.add_argument("--latitude_length", type=int, default=120, help='the number
 parser.add_argument("--depth", type=int, default=20, help='The number of depth grids')
 parser.add_argument("--cut_off", type=int, default=5, help='mhw_tracks shorter than cut_off days will be removed')
 parser.add_argument("--judgment", type=str, default='region', help='the criteria for determining a heat wave include "volume" and "region"')
+parser.add_argument('--output', type=str, default='MHW_tracks_3d_200m_1x1_60_125_coef_0.6_final', help='address and name of the output file')
 
 opt = parser.parse_args()
 START_YEAR = opt.start_year
@@ -30,6 +31,7 @@ LAT_LEN = opt.latitude_length
 DEPTH = opt.depth
 CUT_OFF = opt.cut_off
 JUDGMENT = opt.judgment
+OUTPUT = opt.output
 earth_radius = 6378.137
 pi180 = np.pi / 180
 
@@ -440,6 +442,12 @@ def tracking(current_MHWs, search, lon_len, lat_len, depth, alpha, tracks):
                     search[mhw]['xloc'] = [list(map(lambda x: x + 1, row)) for row in search[mhw]['xloc']]
                     search[mhw]['yloc'] = [list(map(lambda x: x + 1, row)) for row in search[mhw]['yloc']]
                     search[mhw]['zloc'] = [list(map(lambda x: x + 1, row)) for row in search[mhw]['zloc']]
+                    # sort zloc first in order from smallest to largest, then yloc, and finally xloc
+                    for i in range(len(search[mhw]['zloc'])):
+                        sorted_arrays = sorted(zip(search[mhw]['zloc'][i], search[mhw]['yloc'][i], search[mhw]['xloc'][i]), key=lambda x: (x[0], x[1], x[2]))
+                        search[mhw]['zloc'][i] = [x[0] for x in sorted_arrays]
+                        search[mhw]['yloc'][i] = [x[1] for x in sorted_arrays]
+                        search[mhw]['xloc'][i] = [x[2] for x in sorted_arrays]
                     tracks.append(search[mhw])
 
             # remove tracks from open track array
@@ -447,7 +455,7 @@ def tracking(current_MHWs, search, lon_len, lat_len, depth, alpha, tracks):
     return search, tracks
 
 
-def main(start_year, end_year, data_path, land_mask, lon_len, lat_len, depth, alpha, cut_off, judgment):
+def main(start_year, end_year, data_path, land_mask, lon_len, lat_len, depth, alpha, cut_off, judgment, output):
     tracks = []
     search = []
     date_count = 0
@@ -466,6 +474,12 @@ def main(start_year, end_year, data_path, land_mask, lon_len, lat_len, depth, al
         search[mhw]['xloc'] = [list(map(lambda x: x + 1, row)) for row in search[mhw]['xloc']]
         search[mhw]['yloc'] = [list(map(lambda x: x + 1, row)) for row in search[mhw]['yloc']]
         search[mhw]['zloc'] = [list(map(lambda x: x + 1, row)) for row in search[mhw]['zloc']]
+        # sort zloc first in order from smallest to largest, then yloc, and finally xloc
+        for i in range(len(search[mhw]['zloc'])):
+            sorted_arrays = sorted(zip(search[mhw]['zloc'][i], search[mhw]['yloc'][i], search[mhw]['xloc'][i]), key=lambda x: (x[0], x[1], x[2]))
+            search[mhw]['zloc'][i] = [x[0] for x in sorted_arrays]
+            search[mhw]['yloc'][i] = [x[1] for x in sorted_arrays]
+            search[mhw]['xloc'][i] = [x[2] for x in sorted_arrays]
         tracks.append(search[mhw])
 
     # %%%%%%%%%%%%%%%%%%%% remove tracks shorter than cut_off days %%%%%%%%%%%%%%
@@ -473,10 +487,10 @@ def main(start_year, end_year, data_path, land_mask, lon_len, lat_len, depth, al
     for mhw_track in range(len(tracks)):
         short.append(len(tracks[mhw_track]['day']) < cut_off)
     tracks = [value for value, flag in zip(tracks, short) if not flag]
-    np.savez_compressed('./test/MHW_tracks_3d_200m_1x1_60_125_coef_0.6_final', tracks)
+    np.savez_compressed(output, tracks)
 
 
 if __name__ == '__main__':
 
-    main(START_YEAR, END_YEAR, DATA_PATH, LAND_MASK, LON_LEN, LAT_LEN, DEPTH, ALPHA, CUT_OFF, JUDGMENT)
+    main(START_YEAR, END_YEAR, DATA_PATH, LAND_MASK, LON_LEN, LAT_LEN, DEPTH, ALPHA, CUT_OFF, JUDGMENT, OUTPUT)
 
