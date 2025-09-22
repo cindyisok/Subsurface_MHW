@@ -21,7 +21,6 @@ The current version of this package is organized as follows.
 ④Track the MHWs in the time domain (mhw\_overlap\_tracks\_4d\_125.m and mhw\_overlap\_tracks\_4d\_125.py).
 
 
-
 Usage of mhw\_overlap\_tracks\_4d\_125.py:
 
 python mhw\_overlap\_tracks\_4d\_125.py --start\_year 1993 --end\_year 2020 --data\_path 'your/mhw\_data/path' --mask 'map\_mask.mat' --alpha 0.5 --longitude\_length 360 --latitude\_length 120 --depth 20 --cut\_off 5 --judgment 'region' --output 'MHW\_tracks\_3d\_200m\_1x1\_60\_125\_coef\_0.6\_final'
@@ -47,7 +46,6 @@ These datasets are accessible for download via the following Baidu Disk link:
 🔗 Link: https://pan.baidu.com/s/1qKzg2XA4g7HwbYn4oFBGpQ?pwd=mhwt
 
 🔑 Password: mhwt
-
 
 
 Should you have any questions, please feel free to contact me at sundi@ouc.edu.cn.
